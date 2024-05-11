@@ -62,6 +62,7 @@ class CharacterServiceManager {
                 self.total = decodedResponse.data.total
                 for character in loadedCharacters {
                     self.characters.append(character)
+                    print(character.resourceURI)
                 }
                 
                 if self.countCharacter() == self.total {

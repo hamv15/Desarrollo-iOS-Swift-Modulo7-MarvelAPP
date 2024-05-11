@@ -45,6 +45,7 @@ class KeyLoader{
     func getQueryString() -> String {
         ts = (Date().timeIntervalSince1970).asString
         hash = (ts+self.privateKey+self.publicKey).md5
+        print("ts="+ts+"&hash="+hash+"&apikey="+self.publicKey)
         return "ts="+ts+"&hash="+hash+"&apikey="+self.publicKey
     }
     

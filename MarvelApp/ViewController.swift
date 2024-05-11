@@ -10,6 +10,9 @@ import SDWebImage
 
 class ViewController: UIViewController {
     
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+    var charSelected: Character?
+    
     var keyLoader = KeyLoader.shared
     
     var characterManager : CharacterServiceManager?
@@ -27,6 +30,7 @@ class ViewController: UIViewController {
         
         characterManager = CharacterServiceManager()
         characterManager?.loadCharacterData(queryString: keyLoader.getQueryString(limit: Constants.numberOfItemsRequested, offset: 0)){
+            print(self.keyLoader.getQueryString(limit: Constants.numberOfItemsRequested, offset: 0))
             //Objto que maneja la ejecución de tareas en un hio de ejecución principal
             DispatchQueue.main.async {
                 //Para que funcione de manera asincrona
@@ -38,7 +42,26 @@ class ViewController: UIViewController {
             }
             
         }
+        
     }
+    
+    //Método para mandar datos al controlador de char Selected
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "detailSegue" {
+            // Validar si el segue apunta a un UINavigationController
+            if let navigationController = segue.destination as? UINavigationController {
+                // Obtener la referencia del UINavigationController hacia charSelected
+                if let destination = navigationController.topViewController as? CharSelectedViewController {
+                    // Obtener indexPath para recuperar el character de la consulta principal
+                    if let indexPath = self.characterCollectionView.indexPathsForSelectedItems?.first {
+                        charSelected = characterManager?.getCharacter(at: indexPath.row)
+                        destination.detailCharacter = charSelected
+                    }
+                }
+            }
+        }
+    }
+
 }
 
 extension ViewController : UICollectionViewDelegate, UICollectionViewDataSource{
@@ -84,16 +107,16 @@ extension ViewController : UIScrollViewDelegate {
             self.characterManager!.loadCharacterData(queryString: queryString){
                 DispatchQueue.main.async {
                     self.characterCollectionView.reloadData()
-                    print("char com:",self.characterManager!.countCharacter())
-                    print("actual offset: ", self.characterManager!.offset)
+//                    print("char com:",self.characterManager!.countCharacter())
+//                    print("actual offset: ", self.characterManager!.offset)
                     self.characterManager!.offset = self.characterManager!.countCharacter()
-                    print("new offset: ", self.characterManager!.offset)
+                    //print("new offset: ", self.characterManager!.offset)
                     self.characterManager!.isLoading = false
                 }
             }
         }
-        else{
-            print("Don't call API...")
-        }
+//        else{
+//            print("Don't call API...")
+//        }
     }
 }
